@@ -1,0 +1,69 @@
+var
+  MyForm: TclForm;
+  edtpassword,  edtMail,edtPhone,edtUserName: TclEdit;
+  btnInsert: TclButton;
+  insertQuery: TclSqlQuery;
+
+procedure InsertToDatabase;
+begin
+ 
+    insertQuery.SQL.Text := 'INSERT INTO Users (UserName, password, Mail, Phone) VALUES (' +
+                            QuotedStr(edtUserName.Text) + ', ' +
+                            QuotedStr(edtpassword.Text) + ', ' +
+                            QuotedStr(edtMail.Text) + ', ' +
+                            QuotedStr(edtPhone.Text) + ');';
+    insertQuery.ExecSQL;
+   // ShowMessage('kayıt başarılı');
+    end;
+
+
+begin
+  MyForm := TclForm.Create(nil);
+  
+  edtUserName := MyForm.AddNewEdit(MyForm, 'edtUserName', 'UserName');
+  edtUserName.Margins.Top := 30;
+  edtUserName.Margins.Right := 10;
+  edtUserName.Margins.Bottom := 10;
+  edtUserName.Align := alTop;
+  edtUserName.Height := 30;
+  
+  // Kullanıcı adı girişi için edit
+  edtpassword := MyForm.AddNewEdit(MyForm, 'edtpassword', 'password');
+  edtpassword.Margins.Top := 30;
+  edtpassword.Margins.Left := 10;
+  edtpassword.Margins.Right := 10;
+  edtpassword.Margins.Bottom := 10;
+  edtpassword.Align := alTop;
+  edtpassword.Height := 30;
+
+  // E-posta girişi için edit
+  edtMail := MyForm.AddNewEdit(MyForm, 'edtMail', 'Mail');
+  edtMail.Margins.Top := 30;
+  edtMail.Margins.Left := 10;
+  edtMail.Margins.Right := 10;
+  edtMail.Margins.Bottom := 10;
+  edtMail.Align := alTop;
+  edtMail.Height := 30;
+  
+  edtPhone := MyForm.AddNewEdit(MyForm, 'edtPhone', 'Phone');
+  edtPhone.Margins.Top := 30;
+  edtPhone.Margins.Left := 10;
+  edtPhone.Margins.Right := 10;
+  edtPhone.Margins.Bottom := 10;
+  edtPhone.Align := alTop;
+  edtPhone.Height := 30;
+
+  // Veri ekleme butonu
+  btnInsert := MyForm.AddNewButton(MyForm, 'btnInsert', 'Insert');
+  btnInsert.Align := alBottom;
+  MyForm.AddNewEvent(btnInsert, tbeOnClick, 'InsertToDatabase');
+
+  // SQL sorgu nesnesi ve veritabanı bağlantısı
+  insertQuery := TclSqlQuery.Create(nil);
+  Clomosy.DBSQLServerConnect('SQL Server', 'su-db.database.windows.net','dbAdmin','Azure1234','suDb', 1433);
+  insertQuery.Connection := Clomosy.DBSQLServerConnection;
+
+  MyForm.Run;
+end.
+
+

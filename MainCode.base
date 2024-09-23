@@ -1,0 +1,77 @@
+var  
+  MyForm: TclForm;
+  logInBtn, signInBtn: TClproButton;
+  testimage: TclImage;
+  login, mainpage,signin: TclUnit;
+
+procedure LogInBtnClick;
+begin
+  // Log In butonuna tıklandığında login birimini çalıştır
+   //ShowMessage('Log In butonuna tıklandı, login çalıştırılıyor...');
+  Clomosy.RunUnit('login');
+end;
+
+procedure SignInBtnClick;
+begin
+  // Sign In butonuna tıklandığında signin birimini çalıştır
+
+ShowMessage('Sign In butonuna tıklandı, signin çalıştırılıyor...');
+Clomosy.RunUnit('signin');
+end;
+
+begin
+  // Form ve birimlerin oluşturulması
+  MyForm := TclForm.Create(nil);
+  login := TclUnit.Create;
+  signin := TclUnit.Create;
+  mainpage := TclUnit.Create;
+
+  // Log In butonunun oluşturulması ve yapılandırılması
+  logInBtn := MyForm.AddNewProButton(MyForm, 'logInBtn', 'login');
+  clComponent.SetupComponent(logInBtn, '{
+    "Align" : "Bottom",
+    "BackgroundColor" : "#4CAF50",
+    "TextColor" : "#ffffff",
+    "TextBold" : "yes",
+    "RoundHeight" : 10,
+    "MarginBottom" : 60,
+    "Height" : 30,
+    "Width" : 100,
+    "MarginLeft" : 10,
+    "MarginRight" : 10,
+    "RoundWidth" : 10
+  }');
+  // Log In butonuna tıklama olay işleyicisi bağlama
+  MyForm.AddNewEvent(logInBtn, tbeOnClick, 'LogInBtnClick');
+
+  // Sign In butonunun oluşturulması ve yapılandırılması
+  signInBtn := MyForm.AddNewProButton(MyForm, 'signInBtn', 'signin');
+  clComponent.SetupComponent(signInBtn, '{
+    "Align" : "Bottom",
+    "BackgroundColor" : "#000000",
+    "TextColor" : "#ffffff",
+    "TextBold" : "yes",
+    "RoundHeight" : 10,
+    "MarginBottom" : 40,
+    "Height" : 30,
+    "Width" : 100,
+    "MarginLeft" : 10,
+    "MarginRight" : 10,
+    "RoundWidth" : 10
+  }');
+  // Sign In butonuna tıklama olay işleyicisi bağlama
+  MyForm.AddNewEvent(signInBtn, tbeOnClick, 'SignInBtnClick');
+
+  // Arka plan resminin ayarlanması
+  testimage := MyForm.AddNewImage(MyForm, 'testimage');
+  MyForm.SetFormBGImage('https://i.hizliresim.com/ipaca7p.png');
+  
+
+  // Formu çalıştır
+  MyForm.Run;
+end;
+
+
+
+
+

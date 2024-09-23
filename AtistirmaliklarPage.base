@@ -1,0 +1,197 @@
+var
+  mainform: TclForm;
+  AtistirmaliklarPage: TclProPanel;
+  Button: TclProButton;
+  ProductID: Integer;
+  ProductName: string;
+  ProductPrice: float;
+  ProductImageURL: string;
+  insertQuery, ProductQuery: TclSqlQuery;
+  pricelabel, namelabel: TclProLabel;
+  edtProductID, edtProductName, edtProductPrice, edtProductImageURL: TclEdit;
+  i, previousButtonLeft, previousButtonTop: Integer;
+  clickedBtn: TClProButton;
+  clickedProductID: Integer;
+  clickedProductName: string;
+  clickedProductPrice: Double;
+  clickedProductImageURL: string;
+// Veritabanına veri ekleme prosedürü
+procedure SetupDatabaseConnection;
+begin
+  try
+    Clomosy.DBSQLServerConnect('SQL Server', 'su-db.database.windows.net', 'dbAdmin', 'Azure1234', 'suDb', 1433);
+    ShowMessage('Database connected successfully!');
+  except
+   
+      ShowMessage('Database connection failed: ' );
+  end;
+end;
+
+// Insert data into the database
+procedure insertToDatabase;
+begin
+  insertQuery := TclSqlQuery.Create(self);
+  try
+    insertQuery.Connection := Clomosy.DBSQLServerConnection;
+    insertQuery.SQL.Text :=  'INSERT INTO Cart (ProductID, ProductName, ProductPrice, ProductImageURL) ' +
+            'VALUES (' + IntToStr(ProductID) + ', ' + QuotedStr(ProductName) + ', ' + FloatToStr(ProductPrice) + ', ' + QuotedStr(ProductImageURL) + ');';
+    insertQuery.ExecSQL;
+    ShowMessage('Eklendi: ID=' + IntToStr(ProductID) + ', Ad=' + ProductName + ', Fiyat=' + FloatToStr(ProductPrice) + ' TL');
+  except
+ShowMessage(insertQuery); // Sorguyu görsel olarak incelemek için.
+
+      ShowMessage('Veri eklerken hata: ' );
+      ShowMessage('Exception Class: '+LastExceptionClassName+' Exception Message: '+LastExceptionMessage);ShowMessage('Exception Class: '+LastExceptionClassName+' Exception Message: '+LastExceptionMessage);
+  end;
+end;
+
+procedure BtnOnClick;
+begin
+  clickedBtn := TClProButton(mainform.Clsender);
+  
+  clickedProductID := StrToInt(clickedBtn.Caption);
+  ShowMessage(clickedBtn.Caption);
+  ShowMessage(clickedProductID);
+  // Her butonun ürünü sorgudan seçilmeli
+  ProductQuery.First; // Sorgunun başına dön
+  while not ProductQuery.Eof do
+  begin
+    if ProductQuery.FieldByName('ProductID').AsInteger = clickedProductID then
+    begin
+      clickedProductName := ProductQuery.FieldByName('ProductName').AsString;
+      clickedProductPrice := ProductQuery.FieldByName('ProductPrice').AsFloat;
+      clickedProductImageURL := ProductQuery.FieldByName('ProductImageURL').AsString;
+      
+      ShowMessage('Ürün: ' + clickedProductName + ' Fiyat: ' + FloatToStr(clickedProductPrice) + ' TL');
+      
+      // Ürün bilgilerini veritabanına ekle
+      ProductID := clickedProductID;
+      ProductName := clickedProductName;
+      ProductPrice := clickedProductPrice;
+      ProductImageURL := clickedProductImageURL;
+      
+      insertToDatabase;
+      Exit;
+    end;
+    ProductQuery.Next;
+  end;
+  
+  ShowMessage('ProductQuery açık değil veya ürün bulunamadı!');
+end;
+
+
+// Ürünleri sayfaya yükleme prosedürü
+procedure LoadProductsToPage;
+begin
+  ProductQuery := TclSqlQuery.Create(nil);
+  try
+    ProductQuery.Connection := Clomosy.DBSQLServerConnection;
+    ProductQuery.SQL.Text := 'SELECT ProductID, ProductName, ProductPrice, ProductImageURL FROM Products';
+    ProductQuery.Open;
+
+    previousButtonLeft := 10;
+    previousButtonTop := 800;
+    i := 1;
+
+    while not ProductQuery.Eof do
+    begin
+      try
+        ProductID := ProductQuery.FieldByName('ProductID').AsInteger;
+        ProductName := ProductQuery.FieldByName('ProductName').AsString;
+        ProductPrice := ProductQuery.FieldByName('ProductPrice').AsFloat;
+        ProductImageURL := ProductQuery.FieldByName('ProductImageURL').AsString;
+
+        Button := mainform.AddNewProButton(AtistirmaliklarPage, 'Button' + IntToStr(i), '');
+        mainform.AddNewEvent(Button, tbeOnClick, 'InsertToDatabase');
+        
+        Button.Width := 150;
+        Button.Height := 150;
+        Button.Caption := IntToStr(i);
+
+        if (ProductID mod 2 = 1) then
+        begin
+          Button.Margins.Bottom := previousButtonTop;
+          Button.Margins.Right := 0;
+          Button.Margins.Left := 10;
+          previousButtonTop := Button.Top - Button.Height - 10;
+        end
+        else
+        begin
+          Button.Margins.Bottom := previousButtonTop;
+          Button.Margins.Right := 300;
+          Button.Margins.Left := previousButtonLeft;
+          previousButtonLeft := Button.Left - Button.Width - 10;
+        end;
+
+        if Assigned(mainform) then
+          mainform.SetImage(Button, ProductImageURL);
+
+        namelabel := mainform.AddNewProLabel(AtistirmaliklarPage, 'namelabel' + IntToStr(i), '');
+        namelabel.Margins.Bottom := Button.Margins.Bottom - Button.Height - 5;
+        namelabel.Margins.Left := Button.Margins.Left;
+        namelabel.Margins.Right := Button.Margins.Right;
+        namelabel.Text := ProductName;
+
+        pricelabel := mainform.AddNewProLabel(AtistirmaliklarPage, 'pricelabel' + IntToStr(i), '');
+        pricelabel.Margins.Bottom := namelabel.Margins.Bottom - namelabel.Height - 5;
+        pricelabel.Margins.Left := namelabel.Margins.Left;
+        pricelabel.Margins.Right := namelabel.Margins.Right;
+        pricelabel.Text := Format('Fiyat: %.2f TL', [ProductPrice]);
+        
+        
+        mainform.AddNewEvent(Button, tbeOnClick, 'BtnOnClick');
+        
+        ProductQuery.Next;
+        Inc(i);
+      except
+  
+          ShowMessage('Ürün bilgileri işlenirken hata: ' );
+      end;
+    end;
+  except
+    
+      ShowMessage('Sorgu çalıştırılamadı! Hata: ' );
+  end;
+end;
+
+// Ürün ekleme sayfasını oluşturma prosedürü
+procedure AddProductPage;
+begin
+  try
+    AtistirmaliklarPage := mainform.AddNewProPanel(mainform, 'AtistirmaliklarPage');
+    if Assigned(AtistirmaliklarPage) then
+    begin
+      AtistirmaliklarPage.Align := alNone;
+      AtistirmaliklarPage.Width := 600;
+      AtistirmaliklarPage.Height := 800;
+      AtistirmaliklarPage.Left := 50;
+      AtistirmaliklarPage.Top := 50;
+      AtistirmaliklarPage.Margins.Left := 10;
+      AtistirmaliklarPage.Margins.Right := 10;
+      AtistirmaliklarPage.Margins.Top := 5;
+      AtistirmaliklarPage.Margins.Bottom := 10;
+      AtistirmaliklarPage.clProSettings.BackgroundColor := clAlphaColor.clHexToColor('#ffffff');
+      AtistirmaliklarPage.SetclProSettings(AtistirmaliklarPage.clProSettings);
+
+      LoadProductsToPage;
+    end
+    else
+      ShowMessage('Atıştırmalıklar sayfası oluşturulamadı');
+  except
+      ShowMessage('Panel oluşturulurken hata: ' );
+  end;
+end;
+
+// Ana program akışı
+begin
+  mainform := TclForm.Create(nil);
+  try
+    mainform.SetFormColor('#CBEDD5', '', clGNone);
+    SetupDatabaseConnection;
+    AddProductPage;
+    mainform.Run;
+  except
+   
+      ShowMessage('Ana form çalıştırılırken hata: ' );
+  end;
+end.

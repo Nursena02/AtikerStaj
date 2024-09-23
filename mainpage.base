@@ -1,0 +1,291 @@
+var
+  mainform: TCLForm;
+
+  cartpage,bottompanel, categorypanel: TclProPanel;
+  cartButton,categoryButton1, categoryButton2, categoryButton3, categoryButton4, categoryButton5, categoryButton6: TClProButton;
+  category1, category2, category3, category4, category5, category6: TClProLabel;
+  query: TclSqlQuery;
+  LocalQ:TUniQuery;
+procedure LoadCartItems;
+// Var
+ //LocalQ:TUniQuery;
+ 
+ begin 
+   Clomosy.DBSQLServerConnect('SQL Server', 'su-db.database.windows.net','dbAdmin','Azure1234','suDb', 1433);
+  // Clomosy.DBSQLServerConnect('SQL Server','server_name','user_name','user_password','database_name',1433);
+   LocalQ := Clomosy.DBSQLServerQueryWith('SELECT * FROM Cart');
+   LocalQ.Open;
+   with LocalQ do
+   begin
+     While NOT EOF Do
+     Begin
+      // ShowMessage(FieldByName('Product_Model').AsString);
+       Next;
+     End;
+   end;
+ end;
+
+
+procedure ShowCart;
+begin
+  try
+    cartpage := mainform.AddNewProPanel(mainform, 'cartpage');
+    if Assigned(cartpage) then
+    begin
+      cartpage.Align := alNone;
+      cartpage.Width := 600;
+      cartpage.Height := 800;
+      cartpage.Left := 50;
+      cartpage.Top := 50;
+      cartpage.Margins.Left := 10;
+      cartpage.Margins.Right := 10;
+      cartpage.Margins.Top := 5;
+      cartpage.Margins.Bottom := 10;
+      cartpage.clProSettings.BackgroundColor := clAlphaColor.clHexToColor('#ffffff');
+      cartpage.SetclProSettings(cartpage.clProSettings);
+
+      LoadCartItems;
+    end
+    else
+      ShowMessage('sepet sayfası oluşturulamadı');
+  except
+      ShowMessage('Panel oluşturulurken hata: ' );
+  end;
+end;
+
+procedure AddCartButton;
+ begin
+ // if cartButton = nil then
+ // begin
+    //ShowMessage('cartButton oluşturulmamış!');
+  // end;
+  ShowMessage('2');
+  cartButton := mainform.AddNewProButton(bottompanel, 'cartButton', '');
+  cartButton.Width := 100;
+  cartButton.Height := 40;
+  cartButton.Margins.Right := 10;
+  cartButton.Margins.Bottom := 5;
+  cartButton.clProSettings.RoundHeight := 10;
+  cartButton.clProSettings.RoundWidth := 10;
+  cartButton.clProSettings.BackgroundColor := clAlphaColor.clHexToColor('#4CAF50'); 
+  mainform.AddNewEvent(cartButton, tbeOnClick, 'ShowCart'); 
+  mainform.SetImage(cartButton,'https://i.hizliresim.com/jsyryo5.png');
+  cartButton.SetclProSettings(cartButton.clProSettings);
+end;
+
+
+
+procedure addBottomPanel;
+begin
+//  if  bottompanel = nil then
+  //begin
+  //
+   // ShowMessage('Bottom panel oluşturulmamış!');
+  //end;
+  bottompanel := mainform.AddNewProPanel(mainform, 'bottompanel');
+  bottompanel.Align := alTop; 
+  bottompanel.Margins.Top := 5;
+  bottompanel.Margins.Left := 10;
+  bottompanel.Margins.Right := 10;
+  bottompanel.Height := 50; 
+  bottompanel.clProSettings.BackgroundColor := clAlphaColor.clHexToColor('#e1e1e1');
+  bottompanel.clProSettings.RoundHeight := 10;
+  bottompanel.clProSettings.RoundWidth := 10;
+  bottompanel.clProSettings.BorderColor := clAlphaColor.clHexToColor('#d1d1d1');
+  bottompanel.clProSettings.BorderWidth := 1;
+  bottompanel.SetclProSettings(bottompanel.clProSettings);
+end;
+
+
+procedure addCategoryPanel;
+begin
+  categorypanel := mainform.AddNewProPanel(mainform, 'categorypanel');
+  categorypanel.Align := alBottom; 
+  categorypanel.Margins.Top := 25;
+  categorypanel.Margins.Left := 10;
+  categorypanel.Margins.Right := 10;
+  categorypanel.Height := 650; 
+  categorypanel.clProSettings.BackgroundColor := clAlphaColor.clHexToColor('#e1e1e1');
+  categorypanel.clProSettings.RoundHeight := 10;
+  categorypanel.clProSettings.RoundWidth := 10;
+  categorypanel.clProSettings.BorderColor := clAlphaColor.clHexToColor('#d1d1d1');
+  categorypanel.clProSettings.BorderWidth := 1;
+  categorypanel.SetclProSettings(categorypanel.clProSettings);
+end;
+
+procedure iconBtnClick;
+ begin
+  Clomosy.RunUnit('AtistirmaliklarPage');
+ end;
+
+procedure addCategoryButton1;
+begin
+  categoryButton1 := mainform.AddNewProButton(categorypanel, 'CategoryButton1', '');
+  categoryButton1.Width := 120; 
+  categoryButton1.Height := 120; 
+  categoryButton1.Margins.Left := 5;
+  categoryButton1.Margins.Right := 182;
+  categoryButton1.Margins.Bottom := 530;
+  categoryButton1.clProSettings.RoundHeight := 10;
+  categoryButton1.clProSettings.RoundWidth := 10;
+  mainform.SetImage(categoryButton1, 'https://i.hizliresim.com/7o7w78v.png');
+  categoryButton1.SetclProSettings(categoryButton1.clProSettings);
+
+  category1 := mainform.AddNewProLabel(categorypanel, 'category1', 'Fırından');
+  category1.Width := 80;
+  category1.Height := 80;
+  category1.Margins.Left := 10;
+  category1.Margins.Right := 200;
+  category1.Margins.Bottom := 450;
+  category1.clProSettings.FontVertAlign := palCenter;
+  category1.clProSettings.FontHorzAlign := palCenter;
+  category1.clProSettings.TextSettings.Font.Style := [fsBold];
+  category1.SetclProSettings(category1.clProSettings);
+end;
+
+procedure addCategoryButton2;
+begin
+  categoryButton2 := mainform.AddNewProButton(categorypanel, 'CategoryButton2', '');
+  categoryButton2.Width := 120; // Buton genişliğini artır
+  categoryButton2.Height := 120; // Buton yüksekliğini artır
+  categoryButton2.Margins.Right := 5;
+  categoryButton2.Margins.Left := 182;
+  categoryButton2.Margins.Bottom := 530;
+  categoryButton2.clProSettings.RoundHeight := 10;
+  categoryButton2.clProSettings.RoundWidth := 10;
+  mainform.SetImage(categoryButton2, 'https://i.hizliresim.com/ojfki6r.png');
+  categoryButton2.SetclProSettings(categoryButton2.clProSettings);
+
+  category2 := mainform.AddNewProLabel(categorypanel, 'category2', 'Meyve / sebze');
+  category2.Width := 80;
+  category2.Height := 80;
+  category2.Margins.Right := 10;
+  category2.Margins.Left := 200;
+  category2.Margins.Bottom := 450;
+  category2.clProSettings.FontVertAlign := palCenter;
+  category2.clProSettings.FontHorzAlign := palCenter;
+  category2.clProSettings.TextSettings.Font.Style := [fsBold];
+  category2.SetclProSettings(category2.clProSettings);
+end;
+
+procedure addCategoryButton3;
+begin
+  categoryButton3 := mainform.AddNewProButton(categorypanel, 'CategoryButton3', '');
+  categoryButton3.Width := 120; // Buton genişliğini artır
+  categoryButton3.Height := 120; // Buton yüksekliğini artır
+  categoryButton3.Margins.Left := 5;
+  categoryButton3.Margins.Right := 182;
+  categoryButton3.Margins.Bottom := 270;
+  categoryButton3.clProSettings.RoundHeight := 10;
+  categoryButton3.clProSettings.RoundWidth := 10;
+  mainform.SetImage(categoryButton3, 'https://i.hizliresim.com/l0xbr4i.png');
+  categoryButton3.SetclProSettings(categoryButton3.clProSettings);
+
+  category3 := mainform.AddNewProLabel(categorypanel, 'category3', 'Atıştırmalık');
+  category3.Width := 80;
+  category3.Height := 80;
+  category3.Margins.Left := 10;
+  category3.Margins.Right := 200;
+  category3.Margins.Bottom := 170;
+  category3.clProSettings.FontVertAlign := palCenter;
+  category3.clProSettings.FontHorzAlign := palCenter;
+  category3.clProSettings.TextSettings.Font.Style := [fsBold];
+  category3.SetclProSettings(category3.clProSettings);
+  mainform.AddNewEvent(categoryButton3, tbeOnClick, 'iconBtnClick');
+end;
+
+
+procedure addCategoryButton4;
+begin
+  categoryButton4 := mainform.AddNewProButton(categorypanel, 'CategoryButton4', '');
+  categoryButton4.Width := 120; // Buton genişliğini artır
+  categoryButton4.Height := 120; // Buton yüksekliğini artır
+  categoryButton4.Margins.Right := 5;
+  categoryButton4.Margins.Left := 182;
+  categoryButton4.Margins.Bottom := 270;
+  categoryButton4.clProSettings.RoundHeight := 10;
+  categoryButton4.clProSettings.RoundWidth := 10;
+  mainform.SetImage(categoryButton4, 'https://i.hizliresim.com/9d3tqbj.png');
+  categoryButton4.SetclProSettings(categoryButton4.clProSettings);
+
+  category4 := mainform.AddNewProLabel(categorypanel, 'category4', 'Şarküteri');
+  category4.Width := 80;
+  category4.Height := 80;
+  category4.Margins.Right := 10;
+  category4.Margins.Left := 200;
+  category4.Margins.Bottom := 170;
+  category4.clProSettings.FontVertAlign := palCenter;
+  category4.clProSettings.FontHorzAlign := palCenter;
+  category4.clProSettings.TextSettings.Font.Style := [fsBold];
+  category4.SetclProSettings(category4.clProSettings);
+end;
+
+procedure addCategoryButton5;
+begin
+  categoryButton5 := mainform.AddNewProButton(categorypanel, 'CategoryButton5', '');
+  categoryButton5.Width := 120; // Buton genişliğini artır
+  categoryButton5.Height := 120; // Buton yüksekliğini artır
+  categoryButton5.Margins.Left := 5;
+  categoryButton5.Margins.Right := 182;
+  categoryButton5.Margins.Top := 5;
+  categoryButton5.Margins.Bottom := 20;
+  categoryButton5.clProSettings.RoundHeight := 10;
+  categoryButton5.clProSettings.RoundWidth := 10;
+  mainform.SetImage(categoryButton5, 'https://i.hizliresim.com/f7le1cb.png');
+  categoryButton5.SetclProSettings(categoryButton5.clProSettings);
+
+  category5 := mainform.AddNewProLabel(categorypanel, 'category5', 'Kuruyemiş');
+  category5.Width := 80;
+  category5.Height := 80;
+  category5.Margins.Left := 10;
+  category5.Margins.Right := 200;
+  category5.Margins.Top := 85;
+  category5.clProSettings.FontVertAlign := palCenter;
+  category5.clProSettings.FontHorzAlign := palCenter;
+  category5.clProSettings.TextSettings.Font.Style := [fsBold];
+  category5.SetclProSettings(category5.clProSettings);
+end;
+
+procedure addCategoryButton6;
+begin
+  categoryButton6 := mainform.AddNewProButton(categorypanel, 'CategoryButton6', '');
+  categoryButton6.Width := 120; // Buton genişliğini artır
+  categoryButton6.Height := 120; // Buton yüksekliğini artır
+  categoryButton6.Margins.Right := 5;
+  categoryButton6.Margins.Left := 182;
+  categoryButton6.Margins.Top := 5;
+  categoryButton6.Margins.Bottom := 90;
+  categoryButton6.clProSettings.RoundHeight := 10;
+  categoryButton6.clProSettings.RoundWidth := 10;
+  mainform.SetImage(categoryButton6, 'https://i.hizliresim.com/ssbfgvn.png');
+  categoryButton6.SetclProSettings(categoryButton6.clProSettings);
+
+  category6 := mainform.AddNewProLabel(categorypanel, 'category6', 'İçecek');
+  category6.Width := 80;
+  category6.Height := 80;
+  category6.Margins.Right := 10;
+  category6.Margins.Left := 200;
+  category6.Margins.Top := 65;
+  category6.clProSettings.FontVertAlign := palCenter;
+  category6.clProSettings.FontHorzAlign := palCenter;
+  category6.clProSettings.TextSettings.Font.Style := [fsBold];
+  category6.SetclProSettings(category6.clProSettings);
+end;
+
+
+begin
+  mainform := TCLForm.Create(nil);
+  mainform.SetFormColor('#CBEDD5', '', clGNone);
+  addCategoryPanel;
+  addCategoryButton1;
+  addCategoryButton2;
+  addCategoryButton3;
+  addCategoryButton4;
+  addCategoryButton5;
+  addCategoryButton6;
+  LoadCartItems;
+ // ShowCart;
+  addBottomPanel;
+  AddCartButton;
+  mainform.Run;
+end.

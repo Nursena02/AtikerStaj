@@ -1,0 +1,63 @@
+ var
+  MyLogInForm: TclForm;
+  edtUserName, edtPassword: TclEdit;
+  btnLogIn: TclButton;
+  LogInQuery: TclSqlQuery;
+
+procedure LogInToDatabase;
+begin
+ 
+    LogInQuery.SQL.Text := 'SELECT * FROM Users WHERE UserName = ' +
+                           QuotedStr(edtUserName.Text) + ' AND Password = ' +
+                           QuotedStr(edtPassword.Text) + ';';
+    LogInQuery.Open;
+    
+    if LogInQuery.RecordCount > 0 then
+    begin
+        //ShowMessage('Giriş başarılı. Ana sayfaya yönlendiriliyorsunuz...');
+    Clomosy.RunUnit('mainpage');
+      end
+    else
+      ShowMessage('Geçersiz kullanıcıadı veya şifre');
+  end;
+
+
+begin
+  MyLogInForm := TclForm.Create(nil);
+
+  // E-posta girişi için edit
+  edtUserName := MyLogInForm.AddNewEdit(MyLogInForm, 'edtUserName', 'UserName');
+  edtUserName.Margins.Top := 10;
+  edtUserName.Margins.Left := 10;
+  edtUserName.Margins.Right := 10;
+  edtUserName.Margins.Bottom := 10;
+  edtUserName.Align := alTop;
+  edtUserName.Height := 30;
+
+  // Şifre girişi için edit
+  edtPassword := MyLogInForm.AddNewEdit(MyLogInForm, 'edtPassword', 'Password');
+  edtPassword.Margins.Top := 10;
+  edtPassword.Margins.Left := 10;
+  edtPassword.Margins.Right := 10;
+  edtPassword.Margins.Bottom := 10;
+  edtPassword.Align := alTop;
+  edtPassword.Height := 30;
+  //edtPassword.PasswordChar := '*'; // Şifreyi gizle
+
+  // Giriş butonu
+  btnLogIn:= MyLogInForm.AddNewButton(MyLogInForm, 'btnLogIn', 'login');
+  btnLogIn.Align := alBottom;
+  MyLogInForm.AddNewEvent(btnLogIn, tbeOnClick, 'LogInToDatabase');
+
+  // SQL sorgu nesnesi ve veritabanı bağlantısı
+  LogInQuery := TclSqlQuery.Create(nil);
+   Clomosy.DBSQLServerConnect('SQL Server', 'su-db.database.windows.net','dbAdmin','Azure1234','suDb', 1433);
+  LogInQuery.Connection := Clomosy.DBSQLServerConnection;
+
+  // Formu çalıştır
+  edtUserName.Text:='kync';
+  edtPassword.Text:='*1234/56';
+  MyLogInForm.Run;
+end.
+
+
